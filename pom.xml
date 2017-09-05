@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>learn.jni</groupId>
+  <artifactId>jni</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>jni</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- compile must do first otherwise ClassNotFoundException will happen -->
+      <!-- so binding goal "compile" to lifecycle phase "validate" which will do first-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- generate .h file for classes having native methods-->
+      <!-- this plugin can also package c/c++ file to .so .dll and so on
+           but if you want to do so, you should make another module(create
+           another project having new pom.xml and package the module to
+           .so .dll..., then copy to this module's output classes see
+           http://yiheng.github.io/2016/06/01/build-jni-project-with-maven/),
+           in my opinion which is not conveniently
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>native-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>javah</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>javah</goal>
+            </goals>
+            <configuration>
+              <javahOutputDirectory>${basedir}/src/main/c</javahOutputDirectory>
+              <javahOutputFileName>learn_jni.h</javahOutputFileName>
+              <javahClassNames>
+                <javahClassName>learn.jni.Sample01</javahClassName>
+              </javahClassNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- copy .so(it is a share library in linux making by Makefile) to target/classes-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-clib</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>clib</directory>
+                </resource>
+              </resources>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <descriptors>
+            <descriptor>assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
