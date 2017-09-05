@@ -213,8 +213,6 @@ web项目).
 修改[更具体的操作](https://code.visualstudio.com/docs/editor/tasks)
 ```json
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
