@@ -168,3 +168,65 @@ web项目).
     </files>
 </assembly>
 ```
+
+## 使用vscode编写c
+> 更详细操作[coding C/C++ through vscode](https://code.visualstudio.com/docs/languages/cpp)
+1. 使用vscode(July 2017 version 1.15)打开项目文件夹,安装c/c++插件(微软自提供的)
+2. 在用户设置里setting.xml 设置`"C_Cpp.intelliSenseEngine": "Default"` 开启autocomplete等功能(Version 0.12.3: August 17, 2017)
+3. 发现头文件learn_jni.h处`#include <jni.h>`有绿色下划线,将鼠标放上去后,左侧出现黄色灯泡,点击,选择第一个选项,自动在项目根目录下生成.vscode/c\_cpp\_properties.json,并引入了includePath(头文件目录)
+4. 加入项目本身的头文件位置,如本项目,加入这后,就能轻松的ctrl+鼠标 转到定义了(选中,右键,里面有更多查看定义的方法与快捷键)
+```json
+{
+  "name": "Linux",
+  "includePath": [
+      "/usr/include/c++/5.4.0",
+      "/usr/include/x86_64-linux-gnu/c++/5.4.0",
+      "/usr/local/include",
+      "/usr/include",
+      "/usr/include/x86_64-linux-gnu",
+      "/usr/lib/gcc/x86_64-linux-gnu/5/include",
+      "/usr/local/java/jdk1.8.0_101/include",
+      "/usr/local/java/jdk1.8.0_101/include/linux",
+      "${workspaceRoot}/src/main/c"
+  ],
+  "defines": [],
+  "intelliSenseMode": "clang-x64",
+  "browse": {
+      "path": [
+          "/usr/include/c++/5.4.0",
+          "/usr/include/x86_64-linux-gnu/c++/5.4.0",
+          "/usr/local/include",
+          "/usr/include",
+          "/usr/include/x86_64-linux-gnu",
+          "/usr/lib/gcc/x86_64-linux-gnu/5/include",
+          "/usr/local/java/jdk1.8.0_101/include",
+          "/usr/local/java/jdk1.8.0_101/include/linux",
+          "${workspaceRoot}/src/main/c"
+      ],
+      "limitSymbolsToIncludedHeaders": true,
+      "databaseFilename": ""
+  }
+},
+```
+5. 建立自动build任务,由于我们已经有了Makefile文件,因此只需要vscode执行make就行了
+`ctrl+shitf+p`打开命令框,输入Task:Run build task,生成tasks.json文件在.vscode下
+修改[更具体的操作](https://code.visualstudio.com/docs/editor/tasks)
+```json
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "taskName": "build share library",
+            "type": "shell",
+            "command": "make",
+            "args": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
+```
