@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "learn_jni.h": "c",
+        "jni.h": "c",
+        "stdarg.h": "c"
+    }
+}
